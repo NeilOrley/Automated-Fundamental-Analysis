@@ -68,8 +68,8 @@ def plot_dist(df, ticker, sector, _filter, metric, metric_val, fig_size = (20,10
     sns.set_style({'axes.grid' : False})
     sns.set_style(rc=custom_style)
 
-    #ax = sns.histplot(stock_sector_data, kde=True, stat="density")
-    ax = sns.distplot(stock_sector_data, bins=10)
+    ax = sns.histplot(stock_sector_data)
+    #ax = sns.distplot(stock_sector_data, bins=10)
     
     display_metric = metric if metric != 'Operating Margin' else 'Op. Margin'
     if display_metric == 'Volatility (Month)': display_metric = 'Volatility' 
