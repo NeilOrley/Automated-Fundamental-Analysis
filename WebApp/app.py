@@ -123,10 +123,10 @@ if user_input_file is not None:
      sns.set_style({'axes.grid' : False})
      sns.set_style(rc=custom_style)
 
-     #sns.histplot(sector1_data, kde=True, stat="density")
-     #sns.histplot(sector2_data, kde=True, stat="density")
-     sns.distplot(sector1_data, bins=10)
-     sns.distplot(sector2_data, bins=10)
+     sns.histplot(sector1_data)
+     sns.histplot(sector2_data)
+     #sns.distplot(sector1_data, bins=10)
+     #sns.distplot(sector2_data, bins=10)
      
      plt.legend([sector1, sector2])
 
