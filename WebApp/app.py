@@ -123,8 +123,11 @@ if user_input_file is not None:
      sns.set_style({'axes.grid' : False})
      sns.set_style(rc=custom_style)
 
+     #sns.histplot(sector1_data, kde=True, stat="density")
+     #sns.histplot(sector2_data, kde=True, stat="density")
      sns.distplot(sector1_data, bins=10)
      sns.distplot(sector2_data, bins=10)
+     
      plt.legend([sector1, sector2])
 
      st.pyplot(fig)
@@ -186,6 +189,8 @@ if user_input_file is not None:
      col2.metric("Market Cap", row['Market Cap'].values[0])
      col3.metric("Overall Rating", str(rating)[0 : str(rating).find('.')])
 
+     #print(f"str(rating)[0 : str(rating).find('.') {str(rating)[0 : str(rating).find('.')]}")
+
      col4, col5, col6 = st.columns(3)
      col4.metric("Price", row['Price'].values[0])
      col5.metric("Sector", row['Sector'].values[0])
@@ -199,6 +204,9 @@ if user_input_file is not None:
           "Analyze by",
           ('Sector', 'Industry'))
 
+     #print(f"row[filter_by].values[0] = {row[filter_by].values[0]}")
+     #print(f"stock_metric = {stock_metric}")
+     #print(f"metric_val = {row[stock_metric].values[0]}")
 
      fig, subheader, md = ut.plot_dist(df, ticker, sector=(filter_by=='Sector'), _filter=row[filter_by].values[0], metric=stock_metric, metric_val=row[stock_metric].values[0])
 
@@ -207,7 +215,6 @@ if user_input_file is not None:
      st.pyplot(fig)
 
      # Valuation Section 
-
      st.text('')
      st.subheader(f"Valuation Grade: {row['Valuation Grade'].values[0]}")
 

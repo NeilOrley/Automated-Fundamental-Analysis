@@ -41,7 +41,7 @@ Note : le scraping de sites web sans permission peut enfreindre les conditions d
 
 from datetime import date 
 from scraper import URL, get_company_data
-from utils import get_sector_data, get_stock_rating_data, export_to_csv
+from utils import get_sector_data, get_stock_rating_data, export_to_csv, get_category_grades
 
 
 
@@ -52,5 +52,6 @@ today_date = date.today().strftime("%m/%d/%y").replace('/', '.')
 # Lancement du scraping et des calculs       
 allStockData = get_company_data(URL, debug=True)
 get_sector_data(allStockData)
+#category_grades = get_category_grades(allStockData, '', 'Financial')
 get_stock_rating_data(allStockData)
 export_to_csv(allStockData, f"StockRatings-{today_date}.csv")
