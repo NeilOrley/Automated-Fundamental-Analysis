@@ -66,4 +66,4 @@ get_sector_data(allStockData)
 get_stock_rating_data(allStockData)
 export_to_csv(allStockData, f"StockRatings-{today_date}.csv")
 
-companies_with_best_potential = get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick_r=1.0, min_curr_r=1.5, max_rsi=30)
+companies_with_best_potential = get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick_r=1.0, min_curr_r=1.5, max_rsi=45)

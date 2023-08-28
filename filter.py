@@ -1,9 +1,6 @@
 import pandas as pd
 
 
-
-
-
 # Fonction pour convertir la colonne 'Market Cap' en milliards
 def convert_market_cap(value):
     try:
@@ -48,6 +45,9 @@ def get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick
     for sector, percentile_value in percentile_by_sector.items():
         filtered_df = allStockData[(allStockData['Sector'] == sector) & (allStockData['Overall Rating'] > percentile_value)]
         result_df = pd.concat([result_df, filtered_df])
+
+    # Suppression des doublons
+    result_df.drop_duplicates(inplace=True)
 
     # Enregistrez les résultats dans un fichier CSV
     result_df.to_csv(f'companies_with_best_potential_over_{int(percentile_rate*100)}p.csv', index=False)
