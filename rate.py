@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm      
-from constants import allStockData, grading_metrics, grade_scores
+from constants import grading_metrics, grade_scores
 from datetime import date 
 import collections
 
@@ -76,9 +76,22 @@ def get_metric_val(allStockData, ticker, metric_name):
             return 0
 
 
+# Fonction pour convertir la colonne 'Market Cap' en milliards
+def convert_market_cap(value):
+    try:
+        if 'B' in value:
+            return float(value[:-1])
+        elif 'M' in value:
+            return float(value[:-1]) / 1000
+        else:
+            return float(value)
+    except (ValueError, TypeError):
+        return None  # ou 0 ou toute autre valeur par défaut
+
+
+
 """
 Cette fonction prend une valeur val et la compare aux scores associés à chaque note dans le dictionnaire grade_scores. 
-Les scores et les notes sont classés dans l'ordre décroissant. 
 La fonction parcourt ce dictionnaire dans cet ordre et dès que la valeur val est supérieure ou égale au score associé à une note, 
 la fonction retourne cette note sous forme de lettre.
 Par exemple, si val est égal à 3.2, la fonction parcourra les notes du dictionnaire et retournera 'B', car 3.2 est supérieur ou égal au score de 'B' (3.0).
@@ -86,7 +99,7 @@ Par exemple, si val est égal à 3.2, la fonction parcourra les notes du diction
 # Fonction pour convertir une valeur en note sous forme de lettre
 def convert_to_letter_grade(val):
         
-    # Parcours des notes dans l'ordre décroissant
+    # Parcours des notes
     for grade in grade_scores:
         # Si la valeur est supérieure ou égale au score associé à la note
         if val >= grade_scores[grade]:
@@ -100,47 +113,6 @@ def convert_to_letter_grade(val):
 Cette fonction, get_metric_grade, prend en entrée un secteur, 
 le nom d'une métrique et une valeur de métrique, 
 et renvoie une note correspondante à cette valeur de métrique.
-
-Améliorations possibles :
-    Utiliser des seuils personnalisés : 
-        Au lieu d'utiliser uniquement les 10e et 90e percentiles du secteur, 
-        définir des seuils personnalisés en fonction d'un contexte spécifique. 
-        Par exemple, définir des seuils basés sur des benchmarks de l'industrie ou des normes spécifiques à un domaine d'activité.
-
-    Prendre en compte la signification de chaque métrique : 
-        Certaines métriques peuvent avoir une importance plus élevée que d'autres pour évaluer la performance 
-        d'une entreprise dans un secteur donné. Attribuer des poids différents aux métriques en fonction 
-        de leur pertinence pour obtenir une note globale plus précise.
-
-        Fwd P/E (Price-to-Earnings ratio futur) : 
-            Ce ratio est souvent utilisé pour évaluer la valorisation d'une entreprise. 
-            Un poids élevé peut être attribué à cette métrique, car elle fournit une indication 
-            importante de la perception du marché concernant les perspectives de croissance future de l'entreprise.
-        PEG (Price/Earnings to Growth ratio) : 
-            Le PEG ratio est une mesure de la valorisation d'une entreprise ajustée en fonction de sa croissance future attendue. 
-            Il peut être utilisé pour évaluer si une entreprise est sous-évaluée ou surévaluée par rapport à sa croissance prévue. 
-            Une importance similaire au Fwd P/E peut être accordée à cette métrique.
-        P/S (Price-to-Sales ratio) : 
-            Le P/S ratio est utilisé pour évaluer la valorisation d'une entreprise par rapport à ses revenus. 
-            Le poids attribué à cette métrique peut dépendre du secteur spécifique, car certains secteurs ont 
-            tendance à avoir des marges bénéficiaires plus élevées que d'autres.
-        P/B (Price-to-Book ratio) : 
-            Le P/B ratio est utilisé pour évaluer la valorisation d'une entreprise par rapport à la valeur 
-            comptable de ses actifs. Le poids attribué à cette métrique peut varier en fonction du secteur, 
-            car certains secteurs ont une dépendance plus forte aux actifs tangibles que d'autres.
-        P/FCF (Price-to-Free Cash Flow ratio) : 
-            Le P/FCF ratio est utilisé pour évaluer la valorisation d'une entreprise par rapport à son flux de trésorerie disponible. 
-            Cette métrique peut être particulièrement pertinente pour évaluer la capacité d'une entreprise à générer des liquidités. 
-            Le poids attribué dépendra du secteur et de l'importance du flux de trésorerie dans l'analyse financière du secteur.
-        Volatility M (Volatilité) : 
-            La volatilité est une mesure du degré de variation des prix d'une entreprise. 
-            Le poids attribué à cette métrique peut dépendre du niveau de risque acceptable dans le secteur spécifique. 
-            Certains secteurs plus volatils, tels que les secteurs technologiques, peuvent accorder une plus grande importance à cette métrique.
-
-    Considérer la relation entre les métriques : 
-        Parfois, plusieurs métriques sont interdépendantes et leur combinaison peut fournir une meilleure évaluation globale. 
-        Ajouter des règles spécifiques pour prendre en compte ces relations et ajuster la note en conséquence. (P/E & FwdP/E)
-
 """
 def get_metric_grade(sector, metric_name, metric_val):
     
@@ -178,6 +150,7 @@ def get_metric_grade(sector, metric_name, metric_val):
         # Si les deux conditions sont satisfaites, la fonction renvoie la note correspondante (grade).
         if lessThan == False and metric_val > comparison:            
             return grade
+        
     # Si aucune des conditions précédentes n'est satisfaite, la fonction renvoie la note par défaut 'C'.        
     return 'C'
 
@@ -227,6 +200,7 @@ def get_category_grades(allStockData, ticker, sector):
         
     # Retourne le dictionnaire contenant les notes par catégorie avec les moyennes
     return category_grades
+
 
 
 """
@@ -287,7 +261,8 @@ def get_stock_rating_data(allStockData,debug=False):
             # Extraction du ticker et du secteur de la ligne actuelle
             ticker, sector = row[1]['Ticker'], row[1]['Sector']
             
-            if ticker != '' :            
+            if ticker != '' : 
+
                 # Obtention des notes par catégorie pour le ticker et le secteur actuels
                 category_grades = get_category_grades(allStockData, ticker, sector)
                 

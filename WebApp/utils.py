@@ -49,8 +49,10 @@ def plot_dist(df, ticker, sector, _filter, metric, metric_val, fig_size = (20,10
     _filter: The sector or industry of the stock entered
     metric: The metric that the user selected
     '''
-    
-    metric_val = float(str(metric_val).replace('%', ''))
+    try:
+        metric_val = float(str(metric_val).replace('%', ''))
+    except:
+        metric_val = 0
     
     stock_sector_df = df[df['Sector'] == _filter] if sector==True else df[df['Industry'] == _filter]
 

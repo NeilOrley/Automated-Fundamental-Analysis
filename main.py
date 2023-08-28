@@ -38,10 +38,21 @@ Pour éviter de se faire bannir par le site lors du scraping, il serait judicieu
 Note : le scraping de sites web sans permission peut enfreindre les conditions d'utilisation du site et / ou la loi dans certaines juridictions.
 """
 
+"""
+Idées :
+    Compare companies within the same sector for valuation.
+    Look at dividend-paying companies and their payout ratios.
+    Analyze companies based on growth metrics like "EPS next 5Y" or "Sales past 5Y".
+    Understand the liquidity of a company based on 'Curr R' and 'Quick R'.
+    Look for stocks that are potentially overbought or oversold based on the RSI.
+"""
+
+
 
 from datetime import date 
 from scraper import URL, get_company_data
-from utils import get_sector_data, get_stock_rating_data, export_to_csv, get_category_grades
+from rate import get_sector_data, get_stock_rating_data, export_to_csv
+from filter import get_stocks_with_best_potential
 
 
 
@@ -52,6 +63,7 @@ today_date = date.today().strftime("%m/%d/%y").replace('/', '.')
 # Lancement du scraping et des calculs       
 allStockData = get_company_data(URL, debug=True)
 get_sector_data(allStockData)
-#category_grades = get_category_grades(allStockData, '', 'Financial')
 get_stock_rating_data(allStockData)
 export_to_csv(allStockData, f"StockRatings-{today_date}.csv")
+
+companies_with_best_potential = get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick_r=1.0, min_curr_r=1.5, max_rsi=30)
