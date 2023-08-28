@@ -33,7 +33,8 @@ def get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick
     # Appliquer des filtres supplémentaires pour Quick R, Curr R et RSI
     allStockData = allStockData[(allStockData['Quick R'] >= min_quick_r) & 
                                 (allStockData['Curr R'] >= min_curr_r) & 
-                                (allStockData['RSI'] <= max_rsi)]
+                                (allStockData['RSI'] <= max_rsi)&
+                                (allStockData['Market Cap'] >= 1)]
 
     # Grouper les données par secteur et calculer le percentile spécifié de "Overall Rating" pour chaque groupe
     percentile_by_sector = allStockData.groupby('Sector')['Overall Rating'].quantile(percentile_rate)
