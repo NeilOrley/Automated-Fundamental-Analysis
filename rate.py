@@ -76,20 +76,6 @@ def get_metric_val(allStockData, ticker, metric_name):
             return 0
 
 
-# Fonction pour convertir la colonne 'Market Cap' en milliards
-def convert_market_cap(value):
-    try:
-        if 'B' in value:
-            return float(value[:-1])
-        elif 'M' in value:
-            return float(value[:-1]) / 1000
-        else:
-            return float(value)
-    except (ValueError, TypeError):
-        return None  # ou 0 ou toute autre valeur par défaut
-
-
-
 """
 Cette fonction prend une valeur val et la compare aux scores associés à chaque note dans le dictionnaire grade_scores. 
 La fonction parcourt ce dictionnaire dans cet ordre et dès que la valeur val est supérieure ou égale au score associé à une note, 

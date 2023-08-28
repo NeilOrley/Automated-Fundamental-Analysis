@@ -1,5 +1,22 @@
 import pandas as pd
 
+
+
+
+
+# Fonction pour convertir la colonne 'Market Cap' en milliards
+def convert_market_cap(value):
+    try:
+        if 'B' in value:
+            return float(value[:-1])
+        elif 'M' in value:
+            return float(value[:-1]) / 1000
+        else:
+            return float(value)
+    except (ValueError, TypeError):
+        return None  # ou 0 ou toute autre valeur par défaut
+
+
 """
 Cette fonction filtre les société ayant un market cap supérieur à 1 milliard
 puis réalise un 95 eme percentile sur la note globale calculée
