@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import os.path
-from constants import URL, userAgentList, dataframes, allStockData
+from constants import finviz_URL, userAgentList, dataframes
 from tqdm import tqdm   
 import numpy as np
 
@@ -13,7 +13,7 @@ import numpy as np
 warnings.filterwarnings('ignore')
 
 # Récupération du nombre de lignes/stocks à scraper
-def getNumStocks(url):
+def finviz_getNumStocks(url):
 
     agent = random.choice(userAgentList)
     headers = {'User-Agent': agent}
@@ -29,19 +29,19 @@ def getNumStocks(url):
     return float(num_stocks)
 
 # Scrape des données de la page et stockage dans des dataframes
-def get_company_data(url, debug=False):
+def finviz_get_company_data(url, debug=False):
     
     #global allStockData
     
     # Vérifier si le fichier CSV existe
-    csv_filename = f"StockRatings.csv"            
+    csv_filename = f"Finviz_StockRatings.csv"            
 
     if os.path.exists(csv_filename) and debug == True:
         # Lire les données depuis le fichier CSV
         allStockData = pd.read_csv(csv_filename)
     else:
         pageCounter = 1
-        num_stocks = getNumStocks(f"{URL}&r=10000") if debug == False else 200
+        num_stocks = finviz_getNumStocks(f"{finviz_URL}&r=10000") if debug == False else 200
         
         print('\nTotal Stocks:', num_stocks)
         print('\nScraping data...\n')

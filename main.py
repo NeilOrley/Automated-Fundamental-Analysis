@@ -50,7 +50,8 @@ Idées :
 
 
 from datetime import date 
-from scraper import URL, get_company_data
+from constants import finviz_URL
+from scraper import finviz_get_company_data
 from rate import get_sector_data, get_stock_rating_data, export_to_csv
 from filter import get_stocks_with_best_potential
 
@@ -61,7 +62,7 @@ today_date = date.today().strftime("%m/%d/%y").replace('/', '.')
 
 
 # Lancement du scraping et des calculs       
-allStockData = get_company_data(URL, debug=True)
+allStockData = finviz_get_company_data(finviz_URL, debug=False)
 get_sector_data(allStockData)
 get_stock_rating_data(allStockData)
 export_to_csv(allStockData, f"StockRatings-{today_date}.csv")
