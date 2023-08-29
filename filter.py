@@ -21,7 +21,7 @@ conserve les actions répondant a ces critères dans un CSV et retourne le dataf
 """
 def get_stocks_with_best_potential(allStockData, percentile_rate=0.95, min_quick_r=1.0, min_curr_r=1.5, max_rsi=30):
     
-    # Convertir les colonnes pertinentes en numéros à virgule flottante
+    # Convertir les colonnes pertinentes en nombre à virgule flottante
     allStockData['Market Cap'] = allStockData['Market Cap'].apply(convert_market_cap)
     allStockData['Quick R'] = pd.to_numeric(allStockData['Quick R'], errors='coerce')
     allStockData['Curr R'] = pd.to_numeric(allStockData['Curr R'], errors='coerce')
