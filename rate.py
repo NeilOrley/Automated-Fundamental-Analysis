@@ -4,6 +4,7 @@ from tqdm import tqdm
 from constants import grading_metrics, grade_scores
 from datetime import date 
 import collections
+from scipy import stats
 
 # Définition de la date du jour au format souhaité
 today_date = date.today().strftime("%m/%d/%y").replace('/', '.')
@@ -11,9 +12,36 @@ today_date = date.today().strftime("%m/%d/%y").replace('/', '.')
 sector_data = collections.defaultdict(lambda : collections.defaultdict(dict))
 data_to_add = collections.defaultdict(list)
 
-def remove_outliers(S, std):    
+
+"""
+Ces fonction renvoient un sous-ensemble du tableau Numpy d'origine 'S' en supprimant les valeurs aberrantes.
+
+remove_outliers_mean() : Élimine les valeurs qui se situent à plus de std fois l'écart type par rapport à la moyenne
+remove_outliers_percentiles() : Élimine les valeurs qui sont en dehors des percentiles
+remove_outliers_zscore() : Utilise un Z-score pour mesurer à quel point un point est éloigné de la moyenne en unités d'écart-type
+remove_outliers_tukey() : Une version plus robuste des percentiles qui utilise également l'IQR pour calculer des "clôtures" en dehors desquelles les données sont considérées comme des valeurs aberrantes.
+IQR = différence entre le troisième quartile (Q3) et le premier quartile (Q1) 
+"""
+def remove_outliers_mean(S, std):    
     s1 = S[~((S-S.mean()).abs() > std * S.std())]
     return s1[~((s1-s1.mean()).abs() > std * s1.std())]
+
+def remove_outliers_percentiles(S):
+    lower_percentile = np.percentile(S, 25) # premier quartile (Q1) 
+    upper_percentile = np.percentile(S, 75) # troisième quartile (Q3)
+    return S[(S >= lower_percentile) & (S <= upper_percentile)]
+
+def remove_outliers_zscore(S):
+    z_scores = stats.zscore(S)
+    return S[np.abs(z_scores) < 2]  # Modifier le seuil au besoin
+
+def remove_outliers_tukey(S):
+    Q1 = np.percentile(S, 25)
+    Q3 = np.percentile(S, 75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return S[(S >= lower_bound) & (S <= upper_bound)]
 
 
 """
@@ -22,8 +50,8 @@ Ensuite, elle parcourt chaque secteur et, pour chaque secteur, parcourt chaque m
 Les étapes effectuées sont les suivantes :
     Les lignes correspondant au secteur actuel sont extraites du DataFrame allStockData.
     Les valeurs de pourcentage dans la colonne de métrique sont nettoyées et converties en valeurs numériques à l'aide de str.rstrip('%') et pd.to_numeric(). 
-        Les valeurs manquantes sont gérées en utilisant errors='coerce'.
-    Les valeurs aberrantes (outliers) sont supprimées en appelant la fonction remove_outliers().
+    Les valeurs manquantes sont gérées en utilisant errors='coerce'.
+    Les valeurs aberrantes (outliers) sont supprimées en appelant la fonction remove_outliers_mean().
     Différentes statistiques (médiane, quantiles, écart-type) sont calculées pour la métrique actuelle et le secteur actuel 
     et stockées dans le dictionnaire sector_data en utilisant les clés correspondantes.
 """
@@ -49,8 +77,8 @@ def get_sector_data(allStockData):
             rows[metric] = rows[metric].str.rstrip('%')
             rows[metric] = pd.to_numeric(rows[metric], errors='coerce')
             
-            # Suppression des valeurs aberrantes (outliers) en utilisant la fonction remove_outliers (non définie dans le code)
-            data = remove_outliers(rows[metric], 2)
+            # Suppression des valeurs aberrantes (outliers) en utilisant la fonction remove_outliers_mean (non définie dans le code)
+            data = remove_outliers_mean(rows[metric], 2)
             
             # Calcul des statistiques pour la métrique actuelle et le secteur actuel
             sector_data[sector][metric]['Median'] = data.median(skipna=True)
