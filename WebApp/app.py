@@ -8,7 +8,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import rc
-import utils as ut
+import yahoofinance_utils as ut
 
 
 st.set_page_config(page_title="Stock Analysis", page_icon="📈", layout="centered")
